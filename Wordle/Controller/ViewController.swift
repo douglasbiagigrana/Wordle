@@ -9,7 +9,11 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let answer = "after"
+    let answers = [
+        "sagaz", "ritmo"
+    ]
+    var answer = ""
+    
     private var guesses: [[Character?]] = Array(
         repeating: Array(repeating: nil, count: 5),
         count: 6
@@ -20,6 +24,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        answer = answers.randomElement() ?? "moral"
         overrideUserInterfaceStyle = .dark
         view.backgroundColor = .systemGray6
         addChildren()
@@ -79,5 +84,24 @@ extension ViewController: KeyboardViewControllerDelegate {
 extension ViewController: BoardViewControllerDataSource {
     var currentGuesses: [[Character?]] {
         return guesses
+    }
+    
+    func boxColor(at indexPath: IndexPath) -> UIColor? {
+        let rowIndex = indexPath.section
+        let count  = guesses[rowIndex].compactMap({$0}).count
+        guard count == 5 else {
+            return nil
+        }
+        
+        let indexedAnswer = Array(answer)
+        guard let letter =  guesses[indexPath.section][indexPath.row], indexedAnswer.contains(letter) else {
+            return nil
+        }
+        
+        if indexedAnswer[indexPath.row] == letter {
+            return .systemGreen
+        }
+        
+        return .systemOrange
     }
 }

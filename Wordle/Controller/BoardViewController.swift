@@ -9,6 +9,7 @@ import UIKit
 
 protocol BoardViewControllerDataSource: AnyObject {
     var currentGuesses: [[Character?]] { get }
+    func boxColor(at indexPath: IndexPath) -> UIColor?
 }
 
 class BoardViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
@@ -39,7 +40,7 @@ class BoardViewController: UIViewController, UICollectionViewDelegateFlowLayout,
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
         ])
@@ -65,7 +66,7 @@ extension BoardViewController {
             fatalError()
         }
         
-        cell.backgroundColor = nil
+        cell.backgroundColor = dataSource?.boxColor(at: indexPath)
         cell.layer.borderWidth = 1
         cell.layer.borderColor = UIColor.systemGray3.cgColor
         
