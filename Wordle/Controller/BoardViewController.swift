@@ -7,14 +7,15 @@
 
 import UIKit
 
+protocol BoardViewControllerDataSource: AnyObject {
+    var currentGuesses: [[Character?]] { get }
+}
+
 class BoardViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
     
-    var guesses: [[Character?]] = Array(
-        repeating: Array(repeating: nil, count: 5),
-        count: 6
-    )
+    weak var dataSource: BoardViewControllerDataSource?
     
-    let collectionView: UICollectionView = {
+    private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 4
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -43,14 +44,19 @@ class BoardViewController: UIViewController, UICollectionViewDelegateFlowLayout,
 
         ])
     }
+    
+    func reloadData() {
+        collectionView.reloadData()
+    }
 }
 
 extension BoardViewController {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return guesses.count
+        return dataSource?.currentGuesses.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let guesses = dataSource?.currentGuesses ?? []
         return guesses[section].count
     }
     
@@ -62,6 +68,11 @@ extension BoardViewController {
         cell.backgroundColor = nil
         cell.layer.borderWidth = 1
         cell.layer.borderColor = UIColor.systemGray3.cgColor
+        
+        let guesses = dataSource?.currentGuesses ?? []
+        if let letter = guesses[indexPath.section][indexPath.row] {
+            cell.configure(with: letter)
+        }
         
         return cell
     }
